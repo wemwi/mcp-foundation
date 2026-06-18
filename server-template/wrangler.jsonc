@@ -1,0 +1,15 @@
+{
+  // Beim Aufsetzen anpassen: name, compatibility_date (= heutiges Datum).
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "example-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-06-18",
+  // Pflicht für das MCP-SDK auf Workers:
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  }
+  // STATELESS: keine durable_objects / migrations.
+  // Session-State/Elicitation nötig? → McpAgent + Durable Object + SQLite-Migration
+  //   ergänzen und jurisdiction "eu" setzen (Datenresidenz).
+}

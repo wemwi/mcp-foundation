@@ -1,0 +1,43 @@
+{
+  "name": "mcp-foundation",
+  "version": "1.0.0",
+  "description": "Server-agnostisches Framework für eigene MCP-Server auf Cloudflare Workers (Streamable HTTP, static_bearer→OAuth, Allowlist, Redaction).",
+  "type": "module",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    "./core": "./src/core/index.ts",
+    "./logging": "./src/logging/index.ts",
+    "./hosting": "./src/hosting/index.ts",
+    "./tooling": "./src/tooling/index.ts"
+  },
+  "bin": {
+    "mcp-foundation-eject": "./src/tooling/eject.mjs"
+  },
+  "files": [
+    "src",
+    "server-template",
+    "README.md"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "agents": "^0.2.0",
+    "zod": "^3.25.0 || ^4.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260601.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "agents": "^0.2.0",
+    "typescript": "^5.5.0",
+    "zod": "^3.25.0"
+  },
+  "overrides": {
+    "@modelcontextprotocol/sdk": "$@modelcontextprotocol/sdk"
+  }
+}
