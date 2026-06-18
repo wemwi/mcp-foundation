@@ -1,0 +1,17 @@
+# Secrets — NIEMALS committen
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.env
+.env.*
+*.key
+*.pem
+
+# Dependencies / Build
+node_modules/
+dist/
+.wrangler/
+
+# OS / Editor
+.DS_Store
+*.log
