@@ -163,6 +163,8 @@ export function createLoginUiHandler(opts: LoginUiOptions = {}) {
         }
 
         // Passwort gegen den serverseitigen Hash prüfen.
+        // Diagnose: nur die Schlüsselnamen des env loggen, niemals die Werte.
+        log?.info("authorize env keys", { keys: Object.keys(env ?? {}) });
         const expectedHash = env[passwordHashEnvVar];
         if (typeof expectedHash !== "string" || expectedHash.length === 0) {
           log?.warn("authorize password hash not configured", {
