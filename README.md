@@ -13,38 +13,14 @@ nicht über npm publiziert. **Kein GitHub-Template.**
 Die Foundation übernimmt Auth + Transport; ein Consumer-Repo liefert nur `buildServer`
 und die Tools. Beides läuft in **einem** stateless Cloudflare Worker.
 
-```mermaid
-flowchart LR
-  C["MCP-Client<br/>z. B. claude.ai-Connector"]
+![Funktionsweise des Frameworks](docs/architecture.svg)
 
-  subgraph W["Cloudflare Worker · stateless"]
-    direction TB
-    P["OAuthProvider<br/>/authorize · /token · /.well-known"]
-    H["MCP-Handler · /mcp<br/>(Streamable HTTP)"]
-    B["buildServer()<br/>frische Instanz pro Request"]
-    T["Tools · TOOL_ALLOWLIST"]
-    P --> H --> B --> T
-  end
-
-  KV[("OAUTH_KV<br/>Login-State · Tokens · Grants")]
-  API["Externe API<br/>PSI · Telegram · Lexware …"]
-
-  C -->|"OAuth 2.1 · S256-PKCE"| P
-  P <-->|"Login-Hash · Grants"| KV
-  T -->|"Outbound-Secret"| API
-
-  classDef fnd fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f;
-  classDef usr fill:#dcfce7,stroke:#16a34a,color:#14532d;
-  class P,H fnd;
-  class B,T usr;
-```
-
-**Blau** = von der Foundation geliefert (OAuthProvider, MCP-Handler). **Grün** = vom
+**Blau** = von der Foundation geliefert (OAuth-Gate + Transport). **Grün** = vom
 Consumer-Repo geliefert (`buildServer` + Tools). Ablauf: Der Client authentifiziert sich
-per OAuth 2.1 (Login-Seite → Passwort-Hash), der Provider hält den State in `OAUTH_KV`
-und reicht gültige Requests an den MCP-Handler unter `/mcp` weiter. Pro Request entsteht
-eine frische `McpServer`-Instanz, die nur die in `TOOL_ALLOWLIST` freigegebenen Tools
-registriert; diese rufen externe APIs über das jeweilige Outbound-Secret auf.
+per OAuth 2.1 (Login-Seite → Passwort-Hash), der State liegt in `OAUTH_KV`, gültige
+Requests gehen an den MCP-Handler unter `/mcp`. Pro Request entsteht eine frische
+`McpServer`-Instanz mit den in `TOOL_ALLOWLIST` freigegebenen Tools; diese rufen externe
+APIs über das jeweilige Outbound-Secret auf.
 
 ## Voraussetzungen
 
