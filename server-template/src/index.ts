@@ -1,12 +1,16 @@
-import { createWorkerHandler } from "mcp-foundation/hosting";
-import { createStaticBearerAuth } from "mcp-foundation/core";
+import { createOAuthWorker } from "mcp-foundation/hosting";
 import { createLogger } from "mcp-foundation/logging";
 import { buildServer } from "./server.js";
 
 /** Typsicheres Env für diesen Server. */
 interface Env {
-  /** Inbound-Bearer — identisch zum Token im Console-Vault. */
-  MCP_INBOUND_TOKEN: string;
+  /**
+   * SHA-256-Hex des Login-Passworts (wrangler secret / Dashboard-Secret).
+   * Hash erzeugen: `echo -n 'dein-passwort' | sha256sum`
+   */
+  MCP_AUTH_PASSWORD_HASH: string;
+  // OAUTH_KV ist als KV-Binding in wrangler.jsonc gesetzt (Name PFLICHT).
+  // OAUTH_PROVIDER wird vom Provider zur Laufzeit injiziert.
   // Outbound-Secrets hier ergänzen, z.B.:
   // UPSTREAM_API_KEY: string;
 }
@@ -16,17 +20,23 @@ const logger = createLogger({
   bindings: { server: "example-mcp" },
 });
 
-const handler = createWorkerHandler({
+/**
+ * OAuthProvider wrappt den ganzen Worker: er verifiziert eingehende Tokens und
+ * implementiert /token, /register, /.well-known-Discovery selbst. Die
+ * Foundation baut nur die /authorize-Login-Seite (Passwort gegen
+ * MCP_AUTH_PASSWORD_HASH). Stateless: KV statt Durable Object.
+ *
+ * Erst-Connect: claude.ai-Connector → Login-Seite → Passwort → „Erlauben".
+ */
+export default createOAuthWorker({
   buildServer,
-  auth: createStaticBearerAuth({ tokenEnvVar: "MCP_INBOUND_TOKEN" }),
+  login: {
+    // userId/Props landen als ctx.props beim Tool-Kontext (getMcpAuthContext()).
+    userId: "user",
+    title: "example-mcp — Login",
+  },
   // Server-to-Server-Agents senden keinen Origin. Browser-Origins hier whitelisten.
   allowedOrigins: [],
   route: "/mcp",
   logger,
 });
-
-export default {
-  fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-    return handler(request, env as unknown as Record<string, unknown>, ctx);
-  },
-};
