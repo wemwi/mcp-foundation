@@ -76,8 +76,13 @@ export function createWorkerHandler(opts: WorkerHandlerOptions): FetchHandler {
     // Frische Instanz pro Request — kein Singleton.
     const server = opts.buildServer({ env, auth: authResult.context });
 
+    // sessionIdGenerator: undefined erzwingt echten Stateless-Betrieb.
+    // createMcpHandler defaultet sonst auf () => crypto.randomUUID() (stateful);
+    // der Folge-Request träfe eine frische Worker-Invocation ohne diese Session
+    // (kein Durable Object, kein storage) → "Session terminated" (-32600).
     const handler = createMcpHandler(server, {
       route,
+      sessionIdGenerator: undefined,
       ...(authResult.context
         ? { authContext: { props: authResult.context } }
         : {}),
