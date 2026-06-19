@@ -8,7 +8,14 @@
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true
-  }
+  },
+  // OAuth-State (Login-State, Clients, Grants, Tokens). Der Binding-Name MUSS
+  // exakt "OAUTH_KV" heißen — im OAuthProvider hardcodiert, nicht frei wählbar.
+  // Namespace im Dashboard anlegen (Storage & Databases → KV) und ID eintragen.
+  // Pro Repo ein eigener Namespace.
+  "kv_namespaces": [
+    { "binding": "OAUTH_KV", "id": "<im-Dashboard-erzeugte-Namespace-ID>" }
+  ]
   // STATELESS: keine durable_objects / migrations.
   // Session-State/Elicitation nötig? → McpAgent + Durable Object + SQLite-Migration
   //   ergänzen und jurisdiction "eu" setzen (Datenresidenz).

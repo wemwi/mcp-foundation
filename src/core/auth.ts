@@ -3,6 +3,11 @@
  *
  * Das ist der Austauschpunkt: heute static_bearer, später OAuth — ohne
  * Rewrite des Server-Codes. Der Hosting-Adapter kennt nur dieses Interface.
+ *
+ * HINWEIS (OAuth-Umbau): Im OAuth-Pfad (createOAuthWorker) ist diese
+ * AuthMiddleware DORMANT — die Token-Prüfung übernimmt der OAuthProvider VOR
+ * dem apiHandler. `createStaticBearerAuth` bleibt für lokales Testing
+ * (MCP-Inspector / Header-Client via createWorkerHandler) im Code erhalten.
  */
 
 export interface AuthResult {
