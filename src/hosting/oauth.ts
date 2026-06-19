@@ -105,8 +105,13 @@ export function createOAuthWorker(opts: OAuthWorkerOptions): OAuthProvider {
       // Frische Instanz pro Request — kein Singleton.
       const server = opts.buildServer({ env, auth: authContext });
 
+      // sessionIdGenerator: undefined erzwingt echten Stateless-Betrieb.
+      // createMcpHandler defaultet sonst auf () => crypto.randomUUID() (stateful);
+      // der Folge-Request träfe eine frische Worker-Invocation ohne diese Session
+      // (kein Durable Object, kein storage) → "Session terminated" (-32600).
       const handler = createMcpHandler(server, {
         route,
+        sessionIdGenerator: undefined,
         authContext: { props: authContext },
       });
 
