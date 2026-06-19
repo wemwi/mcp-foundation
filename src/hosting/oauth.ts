@@ -141,7 +141,7 @@ export function createOAuthWorker(opts: OAuthWorkerOptions): OAuthProvider {
     allowPlainPKCE: false,
 
     accessTokenTTL: opts.accessTokenTTL ?? 3600,
-    // 0 = nie ablaufen (headless Agents). Nicht undefined lassen → 30-Tage-Default.
-    refreshTokenTTL: opts.refreshTokenTTL ?? 0,
+    // undefined = infinite (headless Agents).
+    refreshTokenTTL: opts.refreshTokenTTL,
   });
 }
