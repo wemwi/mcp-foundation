@@ -8,6 +8,59 @@ nicht über npm publiziert. **Kein GitHub-Template.**
 > stateless über KV). `static_bearer` bleibt im Code, ist aber dormant (nur lokales
 > Testing). Migrations-Schritte: siehe „Neuen Server aufsetzen" + Checkliste unten.
 
+## Funktionsweise
+
+Die Foundation übernimmt Auth + Transport; ein Consumer-Repo liefert nur `buildServer`
+und die Tools. Beides läuft in **einem** stateless Cloudflare Worker.
+
+```mermaid
+flowchart LR
+  C["MCP-Client<br/>z. B. claude.ai-Connector"]
+
+  subgraph W["Cloudflare Worker · stateless"]
+    direction TB
+    P["OAuthProvider<br/>/authorize · /token · /.well-known"]
+    H["MCP-Handler · /mcp<br/>(Streamable HTTP)"]
+    B["buildServer()<br/>frische Instanz pro Request"]
+    T["Tools · TOOL_ALLOWLIST"]
+    P --> H --> B --> T
+  end
+
+  KV[("OAUTH_KV<br/>Login-State · Tokens · Grants")]
+  API["Externe API<br/>PSI · Telegram · Lexware …"]
+
+  C -->|"OAuth 2.1 · S256-PKCE"| P
+  P <-->|"Login-Hash · Grants"| KV
+  T -->|"Outbound-Secret"| API
+
+  classDef fnd fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f;
+  classDef usr fill:#dcfce7,stroke:#16a34a,color:#14532d;
+  class P,H fnd;
+  class B,T usr;
+```
+
+**Blau** = von der Foundation geliefert (OAuthProvider, MCP-Handler). **Grün** = vom
+Consumer-Repo geliefert (`buildServer` + Tools). Ablauf: Der Client authentifiziert sich
+per OAuth 2.1 (Login-Seite → Passwort-Hash), der Provider hält den State in `OAUTH_KV`
+und reicht gültige Requests an den MCP-Handler unter `/mcp` weiter. Pro Request entsteht
+eine frische `McpServer`-Instanz, die nur die in `TOOL_ALLOWLIST` freigegebenen Tools
+registriert; diese rufen externe APIs über das jeweilige Outbound-Secret auf.
+
+## Voraussetzungen
+
+**Einmalig (für alle Server):**
+
+- **Cloudflare-Account** mit Workers (Free-Tier genügt) und **Workers Builds** (Git-Integration) für den Deploy aus dem Repo.
+- **GitHub** — pro Server ein Repo; die Foundation wird als Git-Dependency gezogen (öffentliches Repo oder Build-Zugriff).
+- **Login-Passwort** für die MCP-Server, hinterlegt als SHA-256-Hash (`MCP_AUTH_PASSWORD_HASH`). Ein Passwort darf für alle Server gelten.
+- **Node.js ≥ 24** nur für lokale Entwicklung/Typecheck. Im reinen Git-Build-Workflow baut Cloudflare — dann lokal nicht nötig.
+
+**Pro Server:**
+
+- Ein **KV-Namespace** (Binding **`OAUTH_KV`** — Name im Provider hardcodiert).
+- Das **service-spezifische Outbound-Secret**, je nach angebundener API — z. B. `GOOGLE_PSI_API_KEY` (PageSpeed Insights, via Google Cloud Console), `TELEGRAM_BOT_TOKEN`, `LEXWARE_API_KEY`. Wird als `wrangler secret` bzw. im Dashboard gesetzt, nie ins Git.
+- Ein eigenes **GitHub-Repo** als Kopie von `server-template/`.
+
 ## Struktur
 
 Ein npm-Paket mit Subpath-Exports (kein Workspace — installiert sauber als Git-Dep):
@@ -52,10 +105,33 @@ im Baum → Typkonflikt (`McpServer` nominal inkompatibel) und potenzieller Runt
 Das zwingt den ganzen Baum (inkl. `agents`) auf die eine Version aus den eigenen dependencies (1.29.0).
 Im `server-template` ist das bereits gesetzt.
 
+## Wichtig: `ai`-Alias (Bundling)
+
+`agents` macht intern ein dynamisches `import("ai")` (Vercel AI SDK). `ai` ist dort nur ein
+**optionaler Peer** und wird nicht mitinstalliert — ohne Gegenmaßnahme bricht das esbuild-Bundling
+beim Deploy mit **„Could not resolve 'ai'"** ab.
+
+**Jedes Consumer-Repo** leitet `ai` daher per Alias auf einen leeren Stub um:
+
+```jsonc
+// wrangler.jsonc
+"alias": { "ai": "./src/empty-ai.js" }
+```
+
+```js
+// src/empty-ai.js — Passthrough-Stub
+export const jsonSchema = (schema) => schema;
+export default {};
+```
+
+Im `server-template` ist beides bereits gesetzt. Bestehende Server (Telegram, Lexware, pagespeed)
+haben den Alias schon.
+
 ## Neuen Server aufsetzen
 
 1. `server-template/` kopieren, in `package.json` `name` + die `mcp-foundation`-Git-URL/Tag anpassen.
-2. `wrangler.jsonc`: `name` setzen, `compatibility_date` = heutiges Datum. `nodejs_compat` bleibt Pflicht.
+2. `wrangler.jsonc`: `name` setzen, `compatibility_date` = heutiges Datum. `nodejs_compat` bleibt Pflicht,
+   der `ai`-Alias ebenfalls (siehe oben).
 3. KV-Namespace im Dashboard anlegen (Storage & Databases → KV), ID in `wrangler.jsonc` unter dem
    Binding **`OAUTH_KV`** eintragen (Name ist im Provider hardcodiert — nicht umbenennen). Pro Repo ein Namespace.
 4. Tools in `src/server.ts` definieren — jeder Name muss in `TOOL_ALLOWLIST` stehen.
@@ -102,6 +178,7 @@ Beim Umbau eines Consumer-Repos auf v2 prüfen:
 - [ ] `/authorize` prüft CSRF (Cookie == Form) und Passwort-Hash.
 - [ ] `refreshTokenTTL: 0` (= nie ablaufen) für headless Agents. **Nicht** `undefined` (→ 30-Tage-Default).
 - [ ] `MCP_INBOUND_TOKEN` aus allen Workern entfernt; stattdessen `MCP_AUTH_PASSWORD_HASH` setzen.
+- [ ] `ai`-Alias auf `src/empty-ai.js` gesetzt (Pflicht — `agents` macht ein dynamisches `import('ai')`; ohne Alias bricht das Bundling mit „Could not resolve 'ai'" ab).
 - [ ] `createStaticBearerAuth` bleibt im Code, nur dormant (lokales Testing).
 - [ ] Outbound-Secrets (`LEXWARE_API_KEY` etc.) unangetastet.
 - [ ] Dep `@cloudflare/workers-oauth-provider` ≈ `0.7.x` ergänzt.
@@ -109,6 +186,6 @@ Beim Umbau eines Consumer-Repos auf v2 prüfen:
 ## Verifizierte Tech-Fixpunkte (Stand 19.06.2026)
 
 MCP SDK `1.29.0` (stable, single-package; v2-Split pre-alpha, Launch 28.07.2026) ·
-`agents` `0.2.x` (`createMcpHandler` aus `agents/mcp`) ·
+`agents` `0.2.x` (`createMcpHandler` aus `agents/mcp`; macht ein dynamisches `import('ai')` → `ai`-Alias auf `src/empty-ai.js` Pflicht) ·
 `@cloudflare/workers-oauth-provider` `0.7.2` (KV-Binding `OAUTH_KV` hardcodiert, `env.OAUTH_PROVIDER`
 zur Laufzeit injiziert) · Zod `3.25+`/`4` · Node 24 LTS Zielruntime.
