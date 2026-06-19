@@ -6,6 +6,12 @@
   "compatibility_date": "2026-06-18",
   // Pflicht für das MCP-SDK auf Workers:
   "compatibility_flags": ["nodejs_compat"],
+  // Pflicht: "agents" macht intern ein dynamisches import("ai") (optionaler Peer,
+  // nicht installiert). Ohne diesen Alias bricht das Bundling beim Deploy mit
+  // „Could not resolve 'ai'" ab. Wir leiten "ai" auf einen leeren Stub um.
+  "alias": {
+    "ai": "./src/empty-ai.js"
+  },
   "observability": {
     "enabled": true
   },
