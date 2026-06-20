@@ -1,7 +1,8 @@
 {
   // Beim Aufsetzen anpassen: name, compatibility_date (= heutiges Datum).
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "example-mcp",
+  // Worker-Name = Cloudflare-Service-Name = Repo-Name = name in package.json.
+  "name": "<service>-mcp",
   "main": "src/index.ts",
   "compatibility_date": "2026-06-18",
   // Pflicht für das MCP-SDK auf Workers:
@@ -18,9 +19,9 @@
   // OAuth-State (Login-State, Clients, Grants, Tokens). Der Binding-Name MUSS
   // exakt "OAUTH_KV" heißen — im OAuthProvider hardcodiert, nicht frei wählbar.
   // Namespace im Dashboard anlegen (Storage & Databases → KV) und ID eintragen.
-  // Pro Repo ein eigener Namespace.
+  // Dashboard-Name frei (Konvention MCP_OAUTH_<SERVICE>). Pro Repo ein eigener Namespace.
   "kv_namespaces": [
-    { "binding": "OAUTH_KV", "id": "<im-Dashboard-erzeugte-Namespace-ID>" }
+    { "binding": "OAUTH_KV", "id": "<kv-namespace-id-aus-dem-dashboard>" }
   ]
   // STATELESS: keine durable_objects / migrations.
   // Session-State/Elicitation nötig? → McpAgent + Durable Object + SQLite-Migration
