@@ -40,11 +40,15 @@ export interface OAuthWorkerOptions {
   /** Access-Token-Lebensdauer in Sekunden. Default 3600. */
   accessTokenTTL?: number;
   /**
-   * Refresh-Token-Lebensdauer in Sekunden. Default 0 = nie ablaufen.
+   * Refresh-Token-Lebensdauer in Sekunden. Default `undefined` = unendlich (nie
+   * ablaufen).
    *
    * Headless Managed Agents sollen nur den Erst-Connect interaktiv durch
-   * /authorize machen. ACHTUNG: `0` deaktiviert den Ablauf — `undefined`
-   * würde auf den Provider-Default (30 Tage) zurückfallen.
+   * /authorize machen — danach hält das Refresh-Token die Verbindung am Leben.
+   * Deshalb hier NICHT setzen (`undefined` = unendlich). ACHTUNG: `0` stellt
+   * GAR KEIN Refresh-Token aus → der Client muss stündlich (nach Ablauf des
+   * Access-Tokens) neu durch /authorize → genau der Re-Login-Bug, den man
+   * vermeiden will. `n > 0` lässt das Refresh-Token nach n Sekunden ablaufen.
    */
   refreshTokenTTL?: number;
   /** Endpoint-Pfade (Provider-Defaults der Foundation). */
