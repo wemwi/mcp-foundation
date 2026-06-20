@@ -120,7 +120,8 @@ haben den Alias schon.
 ## OAuth-Flow (Connect)
 
 Stateless, alle Vorgänge in `OAUTH_KV`. Der Erst-Connect ist interaktiv, danach laufen Refreshes
-ohne weitere Login-Seite (`refreshTokenTTL: 0` = nie ablaufen, für headless Managed Agents).
+ohne weitere Login-Seite (`refreshTokenTTL` **nicht setzen** → `undefined` = unendlich, für headless
+Managed Agents).
 
 1. Client (z.B. claude.ai-Connector / MCP Inspector) ruft `/.well-known/...` ab → Provider liefert Metadata.
 2. Client registriert sich dynamisch über `/register` (DCR) und startet den Auth-Code-Flow (S256-PKCE).
@@ -152,7 +153,7 @@ Beim Umbau eines Consumer-Repos auf v2 prüfen:
 - [ ] Nur S256-PKCE (`allowPlainPKCE: false` — von `createOAuthWorker` gesetzt).
 - [ ] Pro Request frische `McpServer`-Instanz (SDK-1.26-Guard — `buildServer`).
 - [ ] `/authorize` prüft CSRF (Cookie == Form) und Passwort-Hash.
-- [ ] `refreshTokenTTL: 0` (= nie ablaufen) für headless Agents. **Nicht** `undefined` (→ 30-Tage-Default).
+- [ ] `refreshTokenTTL` für headless Agents **nicht setzen** (`undefined` = unendlich). **Nicht** `0` — `0` stellt gar kein Refresh-Token aus → stündliches Re-Login.
 - [ ] `MCP_INBOUND_TOKEN` aus allen Workern entfernt; stattdessen `MCP_AUTH_PASSWORD_HASH` setzen.
 - [ ] `ai`-Alias auf `src/empty-ai.js` gesetzt (Pflicht — `agents` macht ein dynamisches `import('ai')`; ohne Alias bricht das Bundling mit „Could not resolve 'ai'" ab).
 - [ ] `createStaticBearerAuth` bleibt im Code, nur dormant (lokales Testing).
