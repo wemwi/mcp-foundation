@@ -1,7 +1,7 @@
 {
   // Beim Aufsetzen anpassen: name, compatibility_date (= heutiges Datum).
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "example-mcp",
+  "name": "<service>-mcp",
   "main": "src/index.ts",
   "compatibility_date": "2026-06-18",
   // Pflicht für das MCP-SDK auf Workers:

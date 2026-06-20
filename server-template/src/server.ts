@@ -7,7 +7,7 @@ import { createAllowlistedRegistrar } from "mcp-foundation/tooling";
  * Allowlist: die einzige Wahrheit darüber, welche Tools live gehen.
  * Jedes Tool muss hier stehen, sonst wirft die Registrierung.
  */
-const TOOL_ALLOWLIST = ["example.ping"] as const;
+const TOOL_ALLOWLIST = ["example_ping"] as const;
 
 /**
  * buildServer wird PRO REQUEST aufgerufen → immer eine frische Instanz.
@@ -15,14 +15,14 @@ const TOOL_ALLOWLIST = ["example.ping"] as const;
  */
 export const buildServer: BuildServer = ({ env, auth }) => {
   const server = new McpServer({
-    name: "example-mcp",
+    name: "<service>-mcp",
     version: "1.0.0",
   });
 
   const register = createAllowlistedRegistrar(server, TOOL_ALLOWLIST);
 
   register(
-    "example.ping",
+    "example_ping",
     {
       title: "Ping",
       description: "Antwortet mit pong und der Auth-Methode.",
@@ -42,8 +42,9 @@ export const buildServer: BuildServer = ({ env, auth }) => {
     },
   );
 
-  // Outbound-Secrets kommen NUR aus env (wrangler secret), nie aus dem Code:
-  // const apiKey = env.UPSTREAM_API_KEY;
+  // Outbound-Secrets kommen NUR aus env (wrangler secret), nie aus dem Code.
+  // Namenskonvention <AUSSTELLER>_<TYP>, z.B. LEXWARE_API_KEY / TELEGRAM_BOT_TOKEN:
+  // const apiKey = env.<AUSSTELLER>_<TYP>;
 
   return server;
 };

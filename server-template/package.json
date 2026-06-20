@@ -1,5 +1,5 @@
 {
-  "name": "example-mcp",
+  "name": "<service>-mcp",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -13,10 +13,8 @@
     "inspect": "npx @modelcontextprotocol/inspector --url http://localhost:8788/mcp"
   },
   "dependencies": {
-    "@cloudflare/workers-oauth-provider": "^0.7.0",
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "agents": "^0.2.0",
-    "mcp-foundation": "github:DEINE-ORG/mcp-foundation#v2.0.0",
+    "mcp-foundation": "github:<org>/<foundation-repo>#<git-tag>",
     "zod": "^3.25.0"
   },
   "devDependencies": {
