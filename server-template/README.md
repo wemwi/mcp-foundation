@@ -12,9 +12,11 @@
 
 ## Tools
 
-| Tool | Beschreibung |
-|---|---|
-| `<prefix>_<verb>_<objekt>` (z.B. `sheets_append_row`) | <Kurzbeschreibung> |
+`name` = `<verb>_<objekt>` (snake_case, kein Prefix). `title` = Anzeigename.
+
+| Tool (`name`) | Anzeige (`title`) | Beschreibung |
+|---|---|---|
+| `<verb>_<objekt>` (z.B. `append_row`) | `<Verb> <Objekt>` (z.B. Append Row) | <Kurzbeschreibung> |
 
 ## Konfiguration (Cloudflare-Dashboard)
 
