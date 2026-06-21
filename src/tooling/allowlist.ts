@@ -10,9 +10,13 @@ type RegisterTool = McpServer["registerTool"];
  * Der zurückgegebene Registrar trägt die exakte (überladene) Signatur von
  * McpServer.registerTool, der Aufrufer bekommt also volle Typsicherheit.
  *
+ * Der Allowlist-Eintrag ist der Tool-`name`: <verb>_<objekt>, snake_case, kein
+ * Service-Prefix (Regex ^[a-zA-Z0-9_-]{1,64}$). Der menschenlesbare `title`
+ * steht NUR im register-Config-Objekt, nie hier.
+ *
  * Nutzung in buildServer():
- *   const register = createAllowlistedRegistrar(server, ["lexware.listInvoices"]);
- *   register("lexware.listInvoices", { ... }, handler);
+ *   const register = createAllowlistedRegistrar(server, ["list_invoices"]);
+ *   register("list_invoices", { title: "List Invoices", ... }, handler);
  */
 export function createAllowlistedRegistrar(
   server: McpServer,
