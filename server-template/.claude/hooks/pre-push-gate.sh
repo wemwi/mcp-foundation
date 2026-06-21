@@ -31,7 +31,7 @@ if [ -f src/server.ts ]; then
   NAMES=$(printf '%s' "$ALLOW" | grep -oE '"[^"]+"|'\''[^'\'']+'\''' | sed -E 's/^.|.$//g')
   for n in $NAMES; do
     printf '%s' "$n" | grep -Eq '^[a-zA-Z0-9_-]{1,64}$' \
-      || fail "ungueltiger Tool-Name \"$n\" in TOOL_ALLOWLIST — erlaubt ist ^[a-zA-Z0-9_-]{1,64}\$ (kein Punkt, kein Leerzeichen). Konvention <service>_<verb>, z.B. sheets_append_row."
+      || fail "ungueltiger Tool-Name \"$n\" in TOOL_ALLOWLIST — erlaubt ist ^[a-zA-Z0-9_-]{1,64}\$ (kein Punkt, kein Leerzeichen). Konvention <verb>_<objekt> (snake_case, kein Prefix), z.B. append_row."
   done
 fi
 
