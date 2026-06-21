@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/wemwi/mcp-foundation/compare/mcp-foundation-v2.1.0...mcp-foundation-v2.2.0) (2026-06-21)
+
+
+### Features
+
+* purgeExpiredData als scheduled-Handler in createOAuthWorker verdrahten ([#11](https://github.com/wemwi/mcp-foundation/issues/11)) ([f583342](https://github.com/wemwi/mcp-foundation/commit/f58334257f84710c3526276abd7e6dde5eb03aa0))
+
 ## [2.1.0](https://github.com/wemwi/mcp-foundation/compare/mcp-foundation-v2.0.7...mcp-foundation-v2.1.0) (2026-06-21)
 
 
