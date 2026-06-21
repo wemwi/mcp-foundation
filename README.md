@@ -27,7 +27,9 @@ Exportierte Oberfläche:
 | `mcp-foundation/hosting` | `createOAuthWorker` (OAuth 2.1, Default) + `createLoginUiHandler`; `createWorkerHandler` (static_bearer, lokales Testing) |
 | `mcp-foundation/tooling` | `createAllowlistedRegistrar`, Test-Harness (`callMcp`/`listTools`), Eject-Script |
 
-**Aktueller Tag:** `v2.0.7` — Consumer-Repos pinnen diesen Tag in ihrer Dependency.
+Consumer-Repos pinnen den **jeweils neuesten Release-Tag** in ihrer Dependency —
+sichtbar oben im Badge und unter [„Releases"](https://github.com/wemwi/mcp-foundation/releases).
+Keine feste Version aus diesem Text übernehmen.
 
 Quickstart, vollständige `createOAuthWorker`-API und Architektur-Details:
 [`docs/framework.md`](docs/framework.md).
@@ -39,11 +41,12 @@ Im Consumer-Repo als Git-Dependency mit festem Tag einbinden (nicht über npm pu
 ```jsonc
 // package.json des Consumers
 "dependencies": {
-  "mcp-foundation": "github:wemwi/mcp-foundation#v2.0.7"
+  "mcp-foundation": "github:wemwi/mcp-foundation#<neuester-tag>"
 }
 ```
 
-Mindestlaufzeit **Node ≥ 24**. Pflicht im Consumer: `overrides` für
+`<neuester-tag>` durch den aktuellen Release-Tag ersetzen (siehe Badge / Releases) —
+nicht abschreiben. Mindestlaufzeit **Node ≥ 24**. Pflicht im Consumer: `overrides` für
 `@modelcontextprotocol/sdk` und der `ai`-Alias (→ [`docs/framework.md`](docs/framework.md)).
 
 > ⚠️ Breaking Changes MÜSSEN als `feat!:` / `BREAKING CHANGE:` markiert werden —
