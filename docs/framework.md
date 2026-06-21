@@ -4,8 +4,9 @@
 > [README](../README.md); diese Datei sammelt die repo-spezifische Tiefe.
 
 Server-agnostisches Framework für eigene MCP-Server auf **Cloudflare Workers**.
-Wird als **versionierte Git-Dependency** konsumiert (`github:wemwi/mcp-foundation#v2.0.7`),
-nicht über npm publiziert. **Kein GitHub-Template.**
+Wird als **versionierte Git-Dependency** konsumiert
+(`github:wemwi/mcp-foundation#<neuester-tag>` — aktuellen Tag aus Badge / Releases
+einsetzen, nicht abschreiben), nicht über npm publiziert. **Kein GitHub-Template.**
 
 > **v2.0 — Inbound-Auth ist OAuth 2.1** (via `@cloudflare/workers-oauth-provider`,
 > stateless über KV). `static_bearer` bleibt im Code, ist aber dormant (nur lokales
@@ -143,7 +144,7 @@ Ein npm-Paket mit Subpath-Exports (kein Workspace — installiert sauber als Git
 |---|---|
 | `mcp-foundation/core` | `BuildServer`-Typ, Auth-Contract + `createStaticBearerAuth` (dormant), `createOriginCheck` |
 | `mcp-foundation/logging` | `createLogger` (strukturiertes JSON) + `redact` (Secret-Redaction) |
-| `mcp-foundation/hosting` | `createOAuthWorker` (OAuth 2.1, Default) + `createLoginUiHandler`; `createWorkerHandler` (static_bearer, lokales Testing) |
+| `mcp-foundation/hosting` | `createOAuthWorker` (OAuth 2.1, Default — inkl. `scheduled`-Handler für die KV-Hygiene) + `createLoginUiHandler` + `purgeExpiredData`; `createWorkerHandler` (static_bearer, lokales Testing) |
 | `mcp-foundation/tooling` | `createAllowlistedRegistrar`, Test-Harness (`callMcp`/`listTools`), Eject-Script |
 
 `server-template/` ist die Kopiervorlage für einen neuen Server.
@@ -160,6 +161,11 @@ Ein npm-Paket mit Subpath-Exports (kein Workspace — installiert sauber als Git
   selbst — die Foundation baut nur die `/authorize`-Login-Seite (Passwort gegen `MCP_AUTH_PASSWORD_HASH`).
   Nur S256-PKCE (`allowPlainPKCE: false`). `static_bearer` (`AuthMiddleware`) bleibt dormant für lokales Testing
   über `createWorkerHandler`.
+- **KV-Hygiene:** `createOAuthWorker` liefert neben `fetch` einen `scheduled`-Handler, der
+  `purgeExpiredData` aufruft (abgelaufene/verwaiste Grants + DCR-Clients). Nötig, weil
+  `refreshTokenTTL: undefined` (Default) Grants nicht von selbst verfallen lässt. Der Server
+  muss nur den Cron Trigger in `wrangler.jsonc` (`triggers.crons`) setzen — im
+  `server-template` bereits auf täglich 03:00 UTC vorkonfiguriert.
 - **Outbound-Secrets:** ausschließlich `wrangler secret`, nie im Git (`.dev.vars`/`.env` hart in `.gitignore`).
 - **Tools:** Allowlist statt Denylist (`createAllowlistedRegistrar`).
 - **Logging:** strukturiert + Redaction (greift bei Keys wie token/secret/authorization und maskiert `Bearer …`).

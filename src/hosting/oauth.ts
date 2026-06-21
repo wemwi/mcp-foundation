@@ -13,7 +13,11 @@
  * Static-Bearer (createStaticBearerAuth) bleibt im Code, ist aber im OAuth-Pfad
  * dormant: die Token-Prüfung macht jetzt der Provider, nicht die AuthMiddleware.
  */
-import { OAuthProvider } from "@cloudflare/workers-oauth-provider";
+import {
+  OAuthProvider,
+  type PurgeOptions,
+  type PurgeResult,
+} from "@cloudflare/workers-oauth-provider";
 import { createMcpHandler } from "agents/mcp";
 import type { BuildServer } from "../core/types.js";
 import { createOriginCheck } from "../core/origin.js";
@@ -57,6 +61,43 @@ export interface OAuthWorkerOptions {
   clientRegistrationEndpoint?: string;
 }
 
+/**
+ * Worker-Oberfläche, die `createOAuthWorker` zurückgibt — der `export default`
+ * einer Server-`index.ts`. `fetch` reicht an den Provider durch; `scheduled` ist
+ * der von der Foundation ergänzte Cron-Handler für die KV-Hygiene
+ * ({@link purgeExpiredData}), den so jeder Server erbt.
+ */
+export interface OAuthWorker {
+  fetch(
+    request: Request,
+    env: OAuthEnv,
+    ctx: ExecutionContext,
+  ): Promise<Response>;
+  scheduled(
+    controller: ScheduledController,
+    env: OAuthEnv,
+    ctx: ExecutionContext,
+  ): Promise<void>;
+}
+
+/**
+ * Räumt abgelaufene und verwaiste OAuth-Records aus `OAUTH_KV` (Grants ohne Client,
+ * abgelaufene Grants, verwaiste Tokens) — delegiert an die Provider-Implementierung.
+ *
+ * Wird vom `scheduled`-Handler in {@link createOAuthWorker} automatisch periodisch
+ * aufgerufen (Cron Trigger) und ist hier zusätzlich für manuelle/Test-Aufrufe
+ * exportiert. Pflicht zur KV-Hygiene, weil bei `refreshTokenTTL: undefined` (Default
+ * — nie ablaufen, gewollt für headless Agents) Grants nicht von selbst verfallen und
+ * jeder Reconnect einen toten DCR-Client + Grant hinterlässt. Siehe storage.md.
+ */
+export function purgeExpiredData(
+  provider: OAuthProvider<OAuthEnv>,
+  env: OAuthEnv,
+  options?: PurgeOptions,
+): Promise<PurgeResult> {
+  return provider.purgeExpiredData(env, options);
+}
+
 function jsonResponse(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), {
     status,
@@ -77,7 +118,7 @@ function jsonResponse(status: number, body: unknown): Response {
  * Der Auth-Kontext ist in Tools via getMcpAuthContext() erreichbar.
  * Es findet KEIN eigener Bearer-Check mehr statt — das macht der Provider davor.
  */
-export function createOAuthWorker(opts: OAuthWorkerOptions): OAuthProvider {
+export function createOAuthWorker(opts: OAuthWorkerOptions): OAuthWorker {
   const route = opts.route ?? "/mcp";
   const originCheck = createOriginCheck(opts.allowedOrigins ?? []);
   const log = opts.logger;
@@ -127,7 +168,7 @@ export function createOAuthWorker(opts: OAuthWorkerOptions): OAuthProvider {
     },
   };
 
-  return new OAuthProvider<OAuthEnv>({
+  const provider = new OAuthProvider<OAuthEnv>({
     // ⚠️ Muss auf den realen MCP-Pfad zeigen (streamable-http = /mcp).
     apiRoute: route,
     apiHandler,
@@ -148,4 +189,26 @@ export function createOAuthWorker(opts: OAuthWorkerOptions): OAuthProvider {
     // undefined = infinite (headless Agents).
     refreshTokenTTL: opts.refreshTokenTTL,
   });
+
+  // Der Provider liefert `fetch` (+ `purgeExpiredData`). Den `scheduled`-Handler
+  // ergänzt die Foundation, damit JEDER Server die KV-Hygiene erbt, ohne sie selbst
+  // zu verdrahten: weil `refreshTokenTTL` undefined ist (Refresh-Tokens laufen nie
+  // ab), räumen sich Grants und verwaiste DCR-Clients nicht von selbst — der Cron
+  // Trigger ruft periodisch purgeExpiredData (Schedule kommt aus triggers.crons der
+  // wrangler.jsonc des Servers; siehe storage.md).
+  return {
+    fetch(request, env, ctx) {
+      return provider.fetch(request, env, ctx);
+    },
+    scheduled(_controller, env, ctx) {
+      ctx.waitUntil(
+        purgeExpiredData(provider, env)
+          .then((result) => log?.info("purgeExpiredData", { ...result }))
+          .catch((error) =>
+            log?.error("purgeExpiredData failed", { error: String(error) }),
+          ),
+      );
+      return Promise.resolve();
+    },
+  };
 }

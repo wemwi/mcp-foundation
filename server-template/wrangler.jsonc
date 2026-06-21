@@ -16,6 +16,13 @@
   "observability": {
     "enabled": true
   },
+  // KV-Hygiene: Cron Trigger ruft den von createOAuthWorker gelieferten
+  // scheduled-Handler (purgeExpiredData). Pflicht, weil refreshTokenTTL undefined
+  // ist → Grants und verwaiste DCR-Clients laufen nicht von selbst ab (siehe
+  // storage.md). Default: täglich 03:00 UTC.
+  "triggers": {
+    "crons": ["0 3 * * *"]
+  },
   // OAuth-State (Login-State, Clients, Grants, Tokens). Der Binding-Name MUSS
   // exakt "OAUTH_KV" heißen — im OAuthProvider hardcodiert, nicht frei wählbar.
   // Namespace im Dashboard anlegen (Storage & Databases → KV) und ID eintragen.

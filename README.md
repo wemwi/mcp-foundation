@@ -24,7 +24,7 @@ Exportierte Oberfläche:
 |--------|-------|
 | `mcp-foundation/core` | `BuildServer`-Typ, Auth-Contract + `createStaticBearerAuth` (dormant), `createOriginCheck` |
 | `mcp-foundation/logging` | `createLogger` (strukturiertes JSON) + `redact` (Secret-Redaction) |
-| `mcp-foundation/hosting` | `createOAuthWorker` (OAuth 2.1, Default) + `createLoginUiHandler`; `createWorkerHandler` (static_bearer, lokales Testing) |
+| `mcp-foundation/hosting` | `createOAuthWorker` (OAuth 2.1, Default — inkl. `scheduled`-Handler für die KV-Hygiene) + `createLoginUiHandler` + `purgeExpiredData`; `createWorkerHandler` (static_bearer, lokales Testing) |
 | `mcp-foundation/tooling` | `createAllowlistedRegistrar`, Test-Harness (`callMcp`/`listTools`), Eject-Script |
 
 Consumer-Repos pinnen den **jeweils neuesten Release-Tag** in ihrer Dependency —
@@ -49,7 +49,8 @@ Im Consumer-Repo als Git-Dependency mit festem Tag einbinden (nicht über npm pu
 nicht abschreiben. Mindestlaufzeit **Node ≥ 24**. Pflicht im Consumer: `overrides` für
 `@modelcontextprotocol/sdk` und der `ai`-Alias (→ [`docs/framework.md`](docs/framework.md)).
 
-> ⚠️ Breaking Changes MÜSSEN als `feat!:` / `BREAKING CHANGE:` markiert werden —
+> [!WARNING]
+> Breaking Changes MÜSSEN als `feat!:` / `BREAKING CHANGE:` markiert werden —
 > Consumer ziehen sonst unbemerkt eine inkompatible Version.
 
 ## Gotchas
