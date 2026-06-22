@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/wemwi/mcp-foundation/compare/v2.5.0...v3.0.0) (2026-06-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* Consumer ziehen mit #v3.0.0 zod 4 und agents 0.16. Wo zutreffend ist eine zod-4-Code-Migration im Consumer nötig (u. a. z.record(v) → z.record(k, v)). Fassade-Range ist jetzt zod ^4.0.0.
+
+### Features
+
+* zod 4 + agents 0.16 (v3.0.0) ([#27](https://github.com/wemwi/mcp-foundation/issues/27)) ([5525a6c](https://github.com/wemwi/mcp-foundation/commit/5525a6cc45e0e18d6915e6000ffdf1e3944029d4))
+
 ## [2.5.0](https://github.com/wemwi/mcp-foundation/compare/v2.4.0...v2.5.0) (2026-06-22)
 
 
