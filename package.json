@@ -12,7 +12,9 @@
     "./core": "./src/core/index.ts",
     "./logging": "./src/logging/index.ts",
     "./hosting": "./src/hosting/index.ts",
-    "./tooling": "./src/tooling/index.ts"
+    "./tooling": "./src/tooling/index.ts",
+    "./schema": "./src/schema/index.ts",
+    "./sdk": "./src/sdk/index.ts"
   },
   "bin": {
     "mcp-foundation-eject": "./src/tooling/eject.mjs"
@@ -25,19 +27,15 @@
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@cloudflare/workers-oauth-provider": "^0.7.0",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "agents": "^0.2.0",
     "zod": "^3.25.0 || ^4.0.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-oauth-provider": "^0.7.0",
     "@cloudflare/workers-types": "^4.20260601.0",
-    "@modelcontextprotocol/sdk": "^1.29.0",
-    "agents": "^0.2.0",
-    "typescript": "^5.5.0",
-    "zod": "^3.25.0"
+    "typescript": "^5.5.0"
   },
   "overrides": {
     "@modelcontextprotocol/sdk": "$@modelcontextprotocol/sdk"
