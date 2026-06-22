@@ -11,9 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "mcp-foundation": "github:<org>/<foundation-repo>#<git-tag>",
-    "@modelcontextprotocol/sdk": "^1.29.0",
-    "zod": "^3.25.0"
+    "mcp-foundation": "github:<org>/<foundation-repo>#<git-tag>"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260601.0",
@@ -21,6 +19,6 @@
     "wrangler": "^4.0.0"
   },
   "overrides": {
-    "@modelcontextprotocol/sdk": "$@modelcontextprotocol/sdk"
+    "@modelcontextprotocol/sdk": "1.29.0"
   }
 }
