@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/wemwi/mcp-foundation/compare/mcp-foundation-v2.2.0...mcp-foundation-v2.3.0) (2026-06-22)
+
+
+### Features
+
+* Dependency-Fassade — zod/SDK/agents/oauth-provider über die Foundation ([63520bf](https://github.com/wemwi/mcp-foundation/commit/63520bf2558ab71d4e63dd3f9b246d25a46808a1))
+
 ## [2.2.0](https://github.com/wemwi/mcp-foundation/compare/mcp-foundation-v2.1.0...mcp-foundation-v2.2.0) (2026-06-21)
 
 
