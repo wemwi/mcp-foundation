@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.0](https://github.com/wemwi/mcp-foundation/compare/v2.4.0...v2.5.0) (2026-06-22)
+
+
+### Features
+
+* **hosting:** @cloudflare/workers-oauth-provider auf 0.8 anheben ([8d210dc](https://github.com/wemwi/mcp-foundation/commit/8d210dc17a2fcc1f7344674e08d694d1bbcc6eb9))
+
 ## [2.4.0](https://github.com/wemwi/mcp-foundation/compare/v2.3.0...v2.4.0) (2026-06-22)
 
 
