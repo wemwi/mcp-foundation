@@ -44,15 +44,22 @@ export interface OAuthWorkerOptions {
   /** Access-Token-Lebensdauer in Sekunden. Default 3600. */
   accessTokenTTL?: number;
   /**
-   * Refresh-Token-Lebensdauer in Sekunden. Default `undefined` = unendlich (nie
-   * ablaufen).
+   * Refresh-Token-Lebensdauer in Sekunden. Hier NICHT setzen (`undefined`) =
+   * unendlich (Refresh-Token läuft nie ab).
+   *
+   * Provider-Semantik (verifiziert für @cloudflare/workers-oauth-provider 0.8):
+   * Seit 0.5 ist der Provider-DEFAULT 30 Tage, WENN die Option weggelassen wird.
+   * Explizit `undefined` zu übergeben stellt das alte Verhalten „nie ablaufen"
+   * wieder her — und genau das tut createOAuthWorker unten
+   * (`refreshTokenTTL: opts.refreshTokenTTL`, der Key ist immer present). 0.8
+   * ändert daran nichts (einzige 0.8-Breaking-Change betrifft den hier nicht
+   * genutzten clientRegistrationCallback).
    *
    * Headless Managed Agents sollen nur den Erst-Connect interaktiv durch
    * /authorize machen — danach hält das Refresh-Token die Verbindung am Leben.
-   * Deshalb hier NICHT setzen (`undefined` = unendlich). ACHTUNG: `0` stellt
-   * GAR KEIN Refresh-Token aus → der Client muss stündlich (nach Ablauf des
-   * Access-Tokens) neu durch /authorize → genau der Re-Login-Bug, den man
-   * vermeiden will. `n > 0` lässt das Refresh-Token nach n Sekunden ablaufen.
+   * ACHTUNG: `0` stellt GAR KEIN Refresh-Token aus → der Client muss stündlich
+   * (nach Ablauf des Access-Tokens) neu durch /authorize → genau der Re-Login-
+   * Bug, den man vermeiden will. `n > 0` lässt das Token nach n Sekunden ablaufen.
    */
   refreshTokenTTL?: number;
   /** Endpoint-Pfade (Provider-Defaults der Foundation). */
