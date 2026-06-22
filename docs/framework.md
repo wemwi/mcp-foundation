@@ -146,6 +146,8 @@ Ein npm-Paket mit Subpath-Exports (kein Workspace — installiert sauber als Git
 | `mcp-foundation/logging` | `createLogger` (strukturiertes JSON) + `redact` (Secret-Redaction) |
 | `mcp-foundation/hosting` | `createOAuthWorker` (OAuth 2.1, Default — inkl. `scheduled`-Handler für die KV-Hygiene) + `createLoginUiHandler` + `purgeExpiredData`; `createWorkerHandler` (static_bearer, lokales Testing) |
 | `mcp-foundation/tooling` | `createAllowlistedRegistrar`, Test-Harness (`callMcp`/`listTools`), Eject-Script |
+| `mcp-foundation/schema` | `z` (zod-Fassade) — Consumer importieren zod NUR hierüber |
+| `mcp-foundation/sdk` | `McpServer` (SDK-Fassade) — Consumer instanziieren ihn hierüber |
 
 `server-template/` ist die Kopiervorlage für einen neuen Server.
 
