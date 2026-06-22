@@ -1,5 +1,5 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+import { McpServer } from "mcp-foundation/sdk";
+import { z } from "mcp-foundation/schema";
 import type { BuildServer } from "mcp-foundation/core";
 import { createAllowlistedRegistrar } from "mcp-foundation/tooling";
 
