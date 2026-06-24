@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.2](https://github.com/wemwi/mcp-foundation/compare/v3.0.1...v3.0.2) (2026-06-24)
+
+
+### Bug Fixes
+
+* server-template-Naming zurück auf &lt;service&gt;-mcp ([#35](https://github.com/wemwi/mcp-foundation/issues/35)) ([0adfdb5](https://github.com/wemwi/mcp-foundation/commit/0adfdb5728bccc75f9424a1ee7f04e7665281322))
+
 ## [3.0.1](https://github.com/wemwi/mcp-foundation/compare/v3.0.0...v3.0.1) (2026-06-24)
 
 
