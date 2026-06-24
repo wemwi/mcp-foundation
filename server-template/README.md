@@ -6,7 +6,7 @@
 
 ## Endpoint
 
-- **URL:** `https://<service>-mcp.<account>.workers.dev/mcp`
+- **URL:** `https://mcp-<service>.<account>.workers.dev/mcp`
 - **Transport:** streamable-http
 - **Auth:** OAuth 2.1 — kein Token-Feld im Connector
 
