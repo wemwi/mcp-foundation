@@ -1,6 +1,6 @@
 {
   "name": "mcp-foundation",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Server-agnostisches Framework für eigene MCP-Server auf Cloudflare Workers (Streamable HTTP, OAuth 2.1 / static_bearer, Allowlist, Redaction).",
   "type": "module",
   "private": true,
