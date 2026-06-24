@@ -1,9 +1,8 @@
 {
   // Beim Aufsetzen anpassen: name, compatibility_date (= heutiges Datum).
   "$schema": "node_modules/wrangler/config-schema.json",
-  // Worker-Name = Cloudflare-Service-Name = workers.dev-Subdomain: mcp-<service>
-  // (mcp-Präfix). Repo-Name und name in package.json bleiben <service>-mcp.
-  "name": "mcp-<service>",
+  // Worker-Name = Cloudflare-Service-Name = Repo-Name = name in package.json.
+  "name": "<service>-mcp",
   "main": "src/index.ts",
   "compatibility_date": "2026-06-18",
   // Pflicht für das MCP-SDK auf Workers:
