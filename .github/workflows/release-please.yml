@@ -13,11 +13,15 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: googleapis/release-please-action@v5
+      - uses: googleapis/release-please-action@v4
+        id: release
         with:
-          # Standard: eingebautes GITHUB_TOKEN.
-          # Nur ersetzen, wenn auf den Release-PRs zusätzlich GitHub-Actions-CI
-          # laufen soll (dann PAT als Secret hinterlegen und hier referenzieren).
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+      - name: Release-PR automatisch mergen
+        if: ${{ steps.release.outputs.pr }}
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+        run: gh pr merge --squash "${{ fromJson(steps.release.outputs.pr).number }}"
