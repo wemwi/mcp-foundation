@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.3](https://github.com/wemwi/mcp-foundation/compare/v3.0.2...v3.0.3) (2026-06-25)
+
+
+### Bug Fixes
+
+* **server-template:** Cron Trigger aus wrangler.jsonc entfernen ([025a049](https://github.com/wemwi/mcp-foundation/commit/025a049c7f4b1254e14527b4215721deaf32950e))
+
 ## [3.0.2](https://github.com/wemwi/mcp-foundation/compare/v3.0.1...v3.0.2) (2026-06-24)
 
 
