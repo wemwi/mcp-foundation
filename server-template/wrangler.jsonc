@@ -16,13 +16,10 @@
   "observability": {
     "enabled": true
   },
-  // KV-Hygiene: Cron Trigger ruft den von createOAuthWorker gelieferten
-  // scheduled-Handler (purgeExpiredData). Pflicht, weil refreshTokenTTL undefined
-  // ist → Grants und verwaiste DCR-Clients laufen nicht von selbst ab (siehe
-  // storage.md). Default: täglich 03:00 UTC.
-  "triggers": {
-    "crons": ["0 3 * * *"]
-  },
+  // KEIN Cron Trigger: Der Cloudflare Free Plan limitiert Cron Triggers, daher
+  // stack-weit keine Cron Jobs. Der scheduled-Handler (purgeExpiredData) der
+  // Foundation bleibt dadurch ungenutzt — bei Single-User unkritisch, da KV
+  // praktisch nicht voll läuft. Verwaiste DCR-Clients/Grants ggf. manuell räumen.
   // OAuth-State (Login-State, Clients, Grants, Tokens). Der Binding-Name MUSS
   // exakt "OAUTH_KV" heißen — im OAuthProvider hardcodiert, nicht frei wählbar.
   // Namespace im Dashboard anlegen (Storage & Databases → KV) und ID eintragen.
