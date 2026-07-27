@@ -19,6 +19,6 @@
     "wrangler": "^4.0.0"
   },
   "overrides": {
-    "@modelcontextprotocol/sdk": "1.29.0"
+    "@modelcontextprotocol/sdk": "1.30.0"
   }
 }
