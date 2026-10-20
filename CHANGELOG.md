@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.4](https://github.com/wemwi/mcp-foundation/compare/v3.0.3...v3.0.4) (2026-10-20)
+
+
+### Bug Fixes
+
+* **oauth:** disable DCR client registration expiry ([#52](https://github.com/wemwi/mcp-foundation/issues/52)) ([bb9381f](https://github.com/wemwi/mcp-foundation/commit/bb9381f6b6ace62a5af8d986e9af5606d82402ec))
+
 ## [3.0.3](https://github.com/wemwi/mcp-foundation/compare/v3.0.2...v3.0.3) (2026-06-25)
 
 
