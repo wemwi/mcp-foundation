@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260621.1",
-    "typescript": "^6.0.3"
+    "typescript": "^7.0.0"
   },
   "overrides": {
     "@modelcontextprotocol/sdk": "$@modelcontextprotocol/sdk"
