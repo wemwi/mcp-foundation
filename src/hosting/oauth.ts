@@ -62,6 +62,19 @@ export interface OAuthWorkerOptions {
    * Bug, den man vermeiden will. `n > 0` lässt das Token nach n Sekunden ablaufen.
    */
   refreshTokenTTL?: number;
+  /**
+   * Lebensdauer per DCR (/register) angelegter Clients in Sekunden. Hier NICHT
+   * setzen (`undefined`) = Registrierung läuft nie ab.
+   *
+   * Provider-Semantik (verifiziert für @cloudflare/workers-oauth-provider 0.8):
+   * Wird die Option weggelassen, greift der Provider-DEFAULT von 90 Tagen — danach
+   * verschwindet der Client aus dem KV, /token antwortet "Client not found" und
+   * headless Clients (z.B. Make) sind tot. Explizit `undefined` setzt kein
+   * `expirationTtl` und meldet `client_secret_expires_at: 0` (= nie); genau das tut
+   * createOAuthWorker unten (`clientRegistrationTTL: opts.clientRegistrationTTL`,
+   * der Key ist immer present).
+   */
+  clientRegistrationTTL?: number;
   /** Endpoint-Pfade (Provider-Defaults der Foundation). */
   authorizeEndpoint?: string;
   tokenEndpoint?: string;
@@ -195,6 +208,8 @@ export function createOAuthWorker(opts: OAuthWorkerOptions): OAuthWorker {
     accessTokenTTL: opts.accessTokenTTL ?? 3600,
     // undefined = infinite (headless Agents).
     refreshTokenTTL: opts.refreshTokenTTL,
+    // undefined = DCR-Clients laufen nie ab (Provider-Default wären 90 Tage).
+    clientRegistrationTTL: opts.clientRegistrationTTL,
   });
 
   // Der Provider liefert `fetch` (+ `purgeExpiredData`). Den `scheduled`-Handler
