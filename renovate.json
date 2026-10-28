@@ -1,6 +1,38 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
+  "mode": "full",
+  "extends": ["config:recommended"],
+  "labels": ["dependencies"],
+  "timezone": "Europe/Berlin",
+  "schedule": ["before 6am on monday"],
+  "packageRules": [
+    {
+      "description": "Minor, Patch, Pin und Digest: ein gebündelter PR je Repo und Woche",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "groupName": "Abhängigkeiten (minor/patch)"
+    },
+    {
+      "description": "Major erst nach Häkchen im Dependency Dashboard",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "0.x: ein Minor-Sprung darf brechen (SemVer), also wie Major behandeln und aus dem Bündel nehmen",
+      "matchCurrentVersion": "/^0\\./",
+      "matchUpdateTypes": ["minor"],
+      "groupName": null,
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "MCP-SDK folgt dem exakten Pin von agents und kommt über mcp-foundation (global-mcp-framework), nie als Einzel-Bump",
+      "matchDepNames": ["@modelcontextprotocol/sdk"],
+      "enabled": false
+    },
+    {
+      "matchDepNames": ["mcp-foundation"],
+      "groupName": "mcp-foundation",
+      "addLabels": ["foundation"],
+      "commitMessagePrefix": "fix(deps):"
+    }
   ]
 }
