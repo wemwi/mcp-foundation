@@ -9,9 +9,15 @@ permissions:
   contents: write
   pull-requests: write
 
+# Release-Läufe nie parallel (sonst Wettlauf um Release-PR/Tag), aber auch nie abbrechen.
+concurrency:
+  group: release-please
+  cancel-in-progress: false
+
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: googleapis/release-please-action@v5
         id: release

@@ -1,0 +1,47 @@
+name: pruefung
+
+# Typecheck auf jedem PR, danach mergt der PR sich selbst (global-git-conventions,
+# references/ci.md). Der check-Job bleibt Pflicht: die Server bauen auf main bzw. den
+# Tags dieser Foundation auf, und jeder Merge dort geht sofort live.
+# Ausnahmen vom Merge: Entwürfe, Forks, renovate/*, release-please--*, Label
+# `kein-automerge` (Label entfernen → Merge läuft nach). Merge per PAT, damit
+# release-please danach anläuft. Kein Lauf auf main: der PR war schon grün.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, unlabeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pruefung-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+
+  automerge:
+    needs: [check]
+    if: >-
+      !github.event.pull_request.draft &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      !startsWith(github.event.pull_request.head.ref, 'renovate/') &&
+      !startsWith(github.event.pull_request.head.ref, 'release-please--') &&
+      !contains(github.event.pull_request.labels.*.name, 'kein-automerge')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: PR mergen
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE }}
+        run: gh pr merge --squash --repo "${{ github.repository }}" "${{ github.event.pull_request.number }}"
